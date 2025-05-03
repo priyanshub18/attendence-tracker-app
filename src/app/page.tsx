@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Calendar, PlusCircle, Trash2, CheckCircle, XCircle, Settings, Save, ChevronRight, BarChart2, AlertTriangle, Award, Clock, RotateCcw, ArrowUp, ArrowDown } from "lucide-react";
 
 // Define types
@@ -36,9 +36,6 @@ interface NewSubject {
 }
 
 export default function AttendanceTracker() {
-  // Refs for animations
-  const listRef = useRef<HTMLDivElement>(null);
-
   // States
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [newSubject, setNewSubject] = useState<NewSubject>({ name: "", targetPercentage: 75 });
@@ -448,7 +445,7 @@ export default function AttendanceTracker() {
         {/* Main Content */}
         <div className='flex-1'>
           {activeTab === "dashboard" && (
-            <div className='space-y-4' ref={listRef}>
+            <div className='space-y-4'>
               {/* Sort options */}
               {subjects.length > 0 && (
                 <div className={`mb-4 flex justify-between items-center p-2 rounded-lg ${darkMode ? "bg-gray-800" : "bg-white shadow-sm"}`}>
