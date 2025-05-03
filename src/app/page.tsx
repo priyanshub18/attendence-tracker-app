@@ -110,7 +110,7 @@ export default function AttendanceTracker() {
       date.setDate(date.getDate() - i);
 
       // Randomly decide if attended (biased towards attending)
-      const status = Math.random() > 0.3 ? "attended" as const : "missed" as const;
+      const status = Math.random() > 0.3 ? ("attended" as const) : ("missed" as const);
 
       history.push({
         date: date.toISOString().split("T")[0], // YYYY-MM-DD format
@@ -356,7 +356,7 @@ export default function AttendanceTracker() {
     return (
       <div className='flex items-center space-x-1 mt-1'>
         {recentHistory.map((record, index) => (
-          <div key={index} className={`w-2 h-6 rounded-sm ${record.status === "attended" ? "bg-green-500 opacity-80" : "bg-red-500 opacity-70"}`} style={{ height: record.status === "attended" ? "24px" : "12px" }}></div>
+          <div key={index} className={`w-2 rounded-sm ${record.status === "attended" ? "bg-green-500 opacity-80" : "bg-red-500 opacity-70"}`} style={{ height: record.status === "attended" ? "24px" : "12px" }}></div>
         ))}
       </div>
     );
@@ -385,81 +385,108 @@ export default function AttendanceTracker() {
     else if (status === "danger") barColor = "bg-red-500";
 
     return (
-      <div className={`h-2 w-full rounded-full ${darkMode ? "bg-gray-700" : "bg-gray-200"} overflow-hidden mt-2`}>
+      <div className={`h-2 w-full rounded-full ${darkMode ? "bg-gray-900" : "bg-gray-200"} overflow-hidden mt-2`}>
         <div className={`h-full ${barColor} transition-all duration-500 ease-out`} style={{ width }}></div>
-        {target < 100 && <div className='h-full w-px bg-white absolute' style={{ left: `${target}%`, top: 0 }}></div>}
       </div>
     );
   };
 
   // Rendering UI components
   return (
-    <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-800"} transition-colors duration-300`}>
+    <div className={`min-h-screen ${darkMode ? "bg-black text-white" : "bg-gray-50 text-gray-800"} transition-colors duration-300`}>
       {/* Loading screen */}
       {isLoading && (
-        <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'>
-          <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-800" : "bg-white"} shadow-lg flex items-center space-x-3`}>
-            <div className='animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500'></div>
-            <span>Loading your attendance data...</span>
+        <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50 backdrop-blur-sm'>
+          <div className={`p-6 rounded-2xl ${darkMode ? "bg-gray-900 bg-opacity-80" : "bg-white"} shadow-2xl flex items-center space-x-4 backdrop-blur-md border border-gray-800 border-opacity-40`}>
+            <div className='animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-purple-500'></div>
+            <span className='font-medium'>Loading your attendance data...</span>
           </div>
         </div>
       )}
 
       {/* Notification toast */}
       {notification && (
-        <div className={`fixed top-4 right-4 p-3 rounded-lg shadow-lg z-40 transition-all duration-300 transform ${notification ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"} ${notification?.type === "success" ? "bg-green-500 text-white" : notification?.type === "error" ? "bg-red-500 text-white" : notification?.type === "warning" ? "bg-yellow-500 text-white" : "bg-blue-500 text-white"}`}>
-          <p>{notification.message}</p>
+        <div
+          className={`fixed top-4 right-4 p-4 rounded-xl shadow-2xl z-40 transition-all duration-300 backdrop-blur-md 
+        ${notification?.type === "success" ? "bg-green-500 bg-opacity-80 text-white" : notification?.type === "error" ? "bg-red-500 bg-opacity-80 text-white" : notification?.type === "warning" ? "bg-yellow-500 bg-opacity-80 text-white" : "bg-blue-500 bg-opacity-80 text-white"}`}
+        >
+          <p className='font-medium'>{notification.message}</p>
         </div>
       )}
 
-      <div className='max-w-4xl mx-auto p-4'>
+      <div className='max-w-5xl mx-auto p-6'>
         {/* Header */}
-        <header className='flex justify-between items-center mb-8 py-2'>
+        <header className='flex justify-between items-center mb-8 py-3'>
           <div className='flex items-center'>
-            <div className={`p-2 rounded-full mr-3 ${darkMode ? "bg-purple-900" : "bg-purple-100"}`}>
-              <Calendar className={`${darkMode ? "text-purple-300" : "text-purple-600"}`} size={24} />
+            <div className={`p-3 rounded-xl mr-4 ${darkMode ? "bg-purple-900 bg-opacity-30 backdrop-blur-md" : "bg-purple-100"}`}>
+              <Calendar className={`${darkMode ? "text-purple-300" : "text-purple-600"}`} size={28} />
             </div>
-            <h1 className='text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 text-transparent bg-clip-text'>Attendance Tracker</h1>
+            <h1 className='text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text'>Attendance Tracker</h1>
           </div>
-          <button onClick={() => setDarkMode(!darkMode)} className={`p-2 rounded-full transition-all duration-300 transform hover:scale-110 ${darkMode ? "bg-gray-800 text-yellow-300" : "bg-gray-200 text-indigo-700"}`}>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className={`p-3 rounded-xl transition-all duration-300 transform hover:scale-110 
+            ${darkMode ? "bg-gray-900 bg-opacity-50 backdrop-blur-md text-yellow-300 border border-gray-800" : "bg-gray-200 text-indigo-700"}`}
+          >
             {darkMode ? "☀️" : "🌙"}
           </button>
         </header>
 
         {/* Navigation Tabs */}
-        <div className='flex mb-6 border-b overflow-x-auto py-1'>
-          <button onClick={() => setActiveTab("dashboard")} className={`px-4 py-2 font-medium transition-all duration-300 relative ${activeTab === "dashboard" ? `${darkMode ? "text-purple-400" : "text-purple-600"}` : `${darkMode ? "text-gray-400" : "text-gray-600"}`}`}>
+        <div className='flex mb-8 overflow-x-auto py-2'>
+          <button
+            onClick={() => setActiveTab("dashboard")}
+            className={`px-6 py-3 mr-4 font-medium transition-all duration-300 rounded-xl
+            ${activeTab === "dashboard" ? `${darkMode ? "bg-gray-900 bg-opacity-50 backdrop-blur-md text-purple-400 border border-purple-900 border-opacity-50" : "bg-white shadow text-purple-600"}` : `${darkMode ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-800"}`}`}
+          >
             Dashboard
-            {activeTab === "dashboard" && <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transform scale-x-100 transition-transform duration-300`}></span>}
           </button>
-          <button onClick={() => setActiveTab("manage")} className={`px-4 py-2 font-medium transition-all duration-300 relative ${activeTab === "manage" ? `${darkMode ? "text-purple-400" : "text-purple-600"}` : `${darkMode ? "text-gray-400" : "text-gray-600"}`}`}>
+          <button
+            onClick={() => setActiveTab("manage")}
+            className={`px-6 py-3 mr-4 font-medium transition-all duration-300 rounded-xl
+            ${activeTab === "manage" ? `${darkMode ? "bg-gray-900 bg-opacity-50 backdrop-blur-md text-purple-400 border border-purple-900 border-opacity-50" : "bg-white shadow text-purple-600"}` : `${darkMode ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-800"}`}`}
+          >
             Manage Subjects
-            {activeTab === "manage" && <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transform scale-x-100 transition-transform duration-300`}></span>}
           </button>
-          <button onClick={() => setActiveTab("stats")} className={`px-4 py-2 font-medium transition-all duration-300 relative ${activeTab === "stats" ? `${darkMode ? "text-purple-400" : "text-purple-600"}` : `${darkMode ? "text-gray-400" : "text-gray-600"}`}`}>
+          <button
+            onClick={() => setActiveTab("stats")}
+            className={`px-6 py-3 font-medium transition-all duration-300 rounded-xl
+            ${activeTab === "stats" ? `${darkMode ? "bg-gray-900 bg-opacity-50 backdrop-blur-md text-purple-400 border border-purple-900 border-opacity-50" : "bg-white shadow text-purple-600"}` : `${darkMode ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-800"}`}`}
+          >
             Statistics
-            {activeTab === "stats" && <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 transform scale-x-100 transition-transform duration-300`}></span>}
           </button>
         </div>
 
         {/* Main Content */}
         <div className='flex-1'>
           {activeTab === "dashboard" && (
-            <div className='space-y-4'>
+            <div className='space-y-6'>
               {/* Sort options */}
               {subjects.length > 0 && (
-                <div className={`mb-4 flex justify-between items-center p-2 rounded-lg ${darkMode ? "bg-gray-800" : "bg-white shadow-sm"}`}>
+                <div className={`mb-6 flex justify-between items-center p-4 rounded-xl ${darkMode ? "bg-gray-900 bg-opacity-60 backdrop-blur-md border border-gray-800 border-opacity-40" : "bg-white shadow-md"}`}>
                   <div className='text-sm font-medium'>Sort by:</div>
-                  <div className='flex space-x-2'>
-                    <button onClick={() => toggleSort("name")} className={`px-2 py-1 text-sm rounded-md flex items-center ${sortField === "name" ? `${darkMode ? "bg-purple-900 text-purple-200" : "bg-purple-100 text-purple-800"}` : `${darkMode ? "bg-gray-700" : "bg-gray-100"}`}`}>
+                  <div className='flex space-x-3'>
+                    <button
+                      onClick={() => toggleSort("name")}
+                      className={`px-3 py-2 text-sm rounded-lg flex items-center transition-all duration-200
+                      ${sortField === "name" ? `${darkMode ? "bg-purple-900 bg-opacity-50 text-purple-200 border border-purple-700" : "bg-purple-100 text-purple-800"}` : `${darkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-100 hover:bg-gray-200"}`}`}
+                    >
                       Name
                       {sortField === "name" && (sortDirection === "asc" ? <ArrowUp size={14} className='ml-1' /> : <ArrowDown size={14} className='ml-1' />)}
                     </button>
-                    <button onClick={() => toggleSort("percentage")} className={`px-2 py-1 text-sm rounded-md flex items-center ${sortField === "percentage" ? `${darkMode ? "bg-purple-900 text-purple-200" : "bg-purple-100 text-purple-800"}` : `${darkMode ? "bg-gray-700" : "bg-gray-100"}`}`}>
+                    <button
+                      onClick={() => toggleSort("percentage")}
+                      className={`px-3 py-2 text-sm rounded-lg flex items-center transition-all duration-200
+                      ${sortField === "percentage" ? `${darkMode ? "bg-purple-900 bg-opacity-50 text-purple-200 border border-purple-700" : "bg-purple-100 text-purple-800"}` : `${darkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-100 hover:bg-gray-200"}`}`}
+                    >
                       Percentage
                       {sortField === "percentage" && (sortDirection === "asc" ? <ArrowUp size={14} className='ml-1' /> : <ArrowDown size={14} className='ml-1' />)}
                     </button>
-                    <button onClick={() => toggleSort("status")} className={`px-2 py-1 text-sm rounded-md flex items-center ${sortField === "status" ? `${darkMode ? "bg-purple-900 text-purple-200" : "bg-purple-100 text-purple-800"}` : `${darkMode ? "bg-gray-700" : "bg-gray-100"}`}`}>
+                    <button
+                      onClick={() => toggleSort("status")}
+                      className={`px-3 py-2 text-sm rounded-lg flex items-center transition-all duration-200
+                      ${sortField === "status" ? `${darkMode ? "bg-purple-900 bg-opacity-50 text-purple-200 border border-purple-700" : "bg-purple-100 text-purple-800"}` : `${darkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-100 hover:bg-gray-200"}`}`}
+                    >
                       Status
                       {sortField === "status" && (sortDirection === "asc" ? <ArrowUp size={14} className='ml-1' /> : <ArrowDown size={14} className='ml-1' />)}
                     </button>
@@ -468,18 +495,18 @@ export default function AttendanceTracker() {
               )}
 
               {subjects.length === 0 ? (
-                <div className={`text-center p-8 rounded-lg ${darkMode ? "bg-gray-800" : "bg-white shadow"} transition-all duration-500 transform hover:scale-[1.01]`}>
+                <div className={`text-center p-10 rounded-2xl ${darkMode ? "bg-gray-900 bg-opacity-60 backdrop-blur-md border border-gray-800 border-opacity-40" : "bg-white shadow-lg"} transition-all duration-500 transform hover:scale-[1.01]`}>
                   <div className='text-center'>
-                    <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${darkMode ? "bg-gray-700" : "bg-purple-50"}`}>
-                      <Calendar className={`${darkMode ? "text-purple-400" : "text-purple-500"}`} size={32} />
+                    <div className={`w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center ${darkMode ? "bg-gray-800 bg-opacity-70" : "bg-purple-50"}`}>
+                      <Calendar className={`${darkMode ? "text-purple-400" : "text-purple-500"}`} size={36} />
                     </div>
-                    <p className='mb-4'>No subjects added yet.</p>
+                    <p className='mb-6 text-lg'>No subjects added yet.</p>
                     <button
                       onClick={() => {
                         setActiveTab("manage");
                         setShowAddForm(true);
                       }}
-                      className={`px-4 py-2 rounded-md ${darkMode ? "bg-gradient-to-r from-purple-600 to-blue-600" : "bg-gradient-to-r from-purple-500 to-blue-500"} text-white flex items-center justify-center mx-auto hover:shadow-lg transition-all duration-300 transform hover:scale-105`}
+                      className={`px-5 py-3 rounded-xl ${darkMode ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500" : "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"} text-white flex items-center justify-center mx-auto hover:shadow-xl transition-all duration-300 transform hover:scale-105`}
                     >
                       <PlusCircle size={18} className='mr-2' />
                       Add Your First Subject
@@ -497,22 +524,22 @@ export default function AttendanceTracker() {
                   return (
                     <div
                       key={subject.id}
-                      className={`rounded-lg ${darkMode ? "bg-gray-800" : "bg-white shadow"} overflow-hidden transition-all duration-300 transform hover:scale-[1.01] ${isExpanded ? "scale-[1.01]" : ""}`}
+                      className={`rounded-xl ${darkMode ? "bg-gray-900 bg-opacity-60 backdrop-blur-md border border-gray-800 border-opacity-40" : "bg-white shadow-lg"} overflow-hidden transition-all duration-300 transform hover:scale-[1.01] ${isExpanded ? "scale-[1.01]" : ""}`}
                       style={{
                         opacity: 0,
                         animation: `fadeInUp 0.5s ease-out ${index * 0.1}s forwards`,
                       }}
                     >
-                      <div className='p-4 cursor-pointer' onClick={() => setExpandedSubject(isExpanded ? null : subject.id)}>
-                        <div className='flex justify-between items-center mb-2'>
+                      <div className='p-5 cursor-pointer' onClick={() => setExpandedSubject(isExpanded ? null : subject.id)}>
+                        <div className='flex justify-between items-center mb-3'>
                           <div className='flex items-center'>
-                            <h3 className='text-lg font-semibold mr-2'>{subject.name}</h3>
-                            {trend === "improving" && <div className='bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full dark:bg-green-900 dark:text-green-200'>Improving</div>}
-                            {trend === "declining" && <div className='bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full dark:bg-red-900 dark:text-red-200'>Declining</div>}
+                            <h3 className='text-xl font-semibold mr-3'>{subject.name}</h3>
+                            {trend === "improving" && <div className={`${darkMode ? "bg-green-900 bg-opacity-30 text-green-300" : "bg-green-100 text-green-800"} text-xs px-3 py-1 rounded-full`}>Improving</div>}
+                            {trend === "declining" && <div className={`${darkMode ? "bg-red-900 bg-opacity-30 text-red-300" : "bg-red-100 text-red-800"} text-xs px-3 py-1 rounded-full`}>Declining</div>}
                           </div>
                           <div
-                            className={`px-3 py-1 rounded-full text-sm font-medium
-                            ${status === "good" ? `${darkMode ? "bg-green-900 text-green-300" : "bg-green-100 text-green-800"}` : status === "warning" ? `${darkMode ? "bg-yellow-900 text-yellow-300" : "bg-yellow-100 text-yellow-800"}` : `${darkMode ? "bg-red-900 text-red-300" : "bg-red-100 text-red-800"}`}`}
+                            className={`px-4 py-2 rounded-full text-sm font-medium
+                            ${status === "good" ? `${darkMode ? "bg-green-900 bg-opacity-30 text-green-300 border border-green-800 border-opacity-30" : "bg-green-100 text-green-800"}` : status === "warning" ? `${darkMode ? "bg-yellow-900 bg-opacity-30 text-yellow-300 border border-yellow-800 border-opacity-30" : "bg-yellow-100 text-yellow-800"}` : `${darkMode ? "bg-red-900 bg-opacity-30 text-red-300 border border-red-800 border-opacity-30" : "bg-red-100 text-red-800"}`}`}
                           >
                             {formatPercentage(currentPercentage)} / {subject.targetPercentage}% Target
                           </div>
@@ -520,70 +547,78 @@ export default function AttendanceTracker() {
 
                         <ProgressBar current={currentPercentage} target={subject.targetPercentage} status={status} />
 
-                        <div className='grid grid-cols-3 gap-3 mt-4'>
-                          <div className={`p-3 rounded-md ${darkMode ? "bg-gray-700" : "bg-gray-50"} transition-all duration-300`}>
+                        <div className='grid grid-cols-3 gap-4 mt-5'>
+                          <div className={`p-4 rounded-xl ${darkMode ? "bg-gray-800 bg-opacity-70 backdrop-blur-sm border border-gray-700 border-opacity-30" : "bg-gray-50"} transition-all duration-300`}>
                             <div className='flex justify-between'>
-                              <p className='text-sm text-gray-500'>Attendance</p>
+                              <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Attendance</p>
                               <CheckCircle size={16} className={status === "good" ? "text-green-500" : "text-gray-400"} />
                             </div>
-                            <p className='font-semibold'>
+                            <p className='font-semibold mt-1'>
                               {subject.attended} / {subject.total} Classes
                             </p>
                           </div>
-                          <div className={`p-3 rounded-md ${darkMode ? "bg-gray-700" : "bg-gray-50"} transition-all duration-300`}>
+                          <div className={`p-4 rounded-xl ${darkMode ? "bg-gray-800 bg-opacity-70 backdrop-blur-sm border border-gray-700 border-opacity-30" : "bg-gray-50"} transition-all duration-300`}>
                             <div className='flex justify-between'>
-                              <p className='text-sm text-gray-500'>Can Skip</p>
+                              <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Can Skip</p>
                               <Clock size={16} className={canSkip > 0 ? "text-blue-500" : "text-gray-400"} />
                             </div>
-                            <p className='font-semibold'>
+                            <p className='font-semibold mt-1'>
                               {canSkip} {canSkip === 1 ? "Class" : "Classes"}
                             </p>
                           </div>
-                          <div className={`p-3 rounded-md ${darkMode ? "bg-gray-700" : "bg-gray-50"} transition-all duration-300`}>
+                          <div className={`p-4 rounded-xl ${darkMode ? "bg-gray-800 bg-opacity-70 backdrop-blur-sm border border-gray-700 border-opacity-30" : "bg-gray-50"} transition-all duration-300`}>
                             <div className='flex justify-between'>
-                              <p className='text-sm text-gray-500'>Status</p>
-                              {status === "good" ? <Award size={16} className='text-green-500' /> : status === "warning" ? <AlertTriangle size={16} className='text-yellow-500' /> : <AlertTriangle size={16} className='text-red-500' />}
+                              <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Status</p>
+                              {status === "good" ? <Award size={16} className='text-green-500' /> : status === "warning" ? <AlertTriangle size={16} className='text-yellow-500' /> : <XCircle size={16} className='text-red-500' />}
                             </div>
-                            <p className='font-semibold capitalize'>{status}</p>
+                            <p className='font-semibold mt-1'>{status === "good" ? "On Track" : status === "warning" ? "At Risk" : "Critical"}</p>
+                            {renderMiniChart(subject)}
                           </div>
                         </div>
 
-                        {renderMiniChart(subject)}
-
-                        <div className='flex justify-between items-center mt-4'>
-                          <div className='text-sm text-gray-500'>Tap to {isExpanded ? "collapse" : "expand"}</div>
-                          <ChevronRight size={20} className={`transition-transform duration-300 ${isExpanded ? "rotate-90" : ""}`} />
-                        </div>
+                        <ChevronRight size={16} className={`ml-auto mt-3 transition-transform duration-300 ${isExpanded ? "rotate-90" : ""} ${darkMode ? "text-gray-300" : "text-gray-600"}`} />
                       </div>
 
+                      {/* Expanded section */}
                       {isExpanded && (
-                        <div className={`p-4 ${darkMode ? "border-t border-gray-700" : "border-t border-gray-100"} animate-fadeIn`}>
-                          <div className='flex space-x-3 mb-2'>
-                            <button
-                              onClick={() => recordAttendance(subject.id, "attended")}
-                              className={`flex-1 py-3 rounded-md flex items-center justify-center
-                                ${darkMode ? "bg-green-800 hover:bg-green-700 text-white" : "bg-green-100 hover:bg-green-200 text-green-800"}`}
-                            >
-                              <CheckCircle size={16} className='mr-1' /> Attended
+                        <div className={`p-5 border-t ${darkMode ? "border-gray-800" : "border-gray-100"} transition-opacity duration-500`}>
+                          <h4 className='font-medium mb-3'>Actions</h4>
+                          <div className='flex space-x-3'>
+                            <button onClick={() => recordAttendance(subject.id, "attended")} className={`px-4 py-2 rounded-lg flex items-center ${darkMode ? "bg-green-800 bg-opacity-30 text-green-400 hover:bg-opacity-40 border border-green-800 border-opacity-30" : "bg-green-100 text-green-700 hover:bg-green-200"} transition-all duration-200`}>
+                              <CheckCircle size={16} className='mr-2' />
+                              Present
                             </button>
-                            <button
-                              onClick={() => recordAttendance(subject.id, "missed")}
-                              className={`flex-1 py-3 rounded-md flex items-center justify-center
-                                ${darkMode ? "bg-red-800 hover:bg-red-700 text-white" : "bg-red-100 hover:bg-red-200 text-red-800"}`}
-                            >
-                              <XCircle size={16} className='mr-1' /> Missed
+                            <button onClick={() => recordAttendance(subject.id, "missed")} className={`px-4 py-2 rounded-lg flex items-center ${darkMode ? "bg-red-800 bg-opacity-30 text-red-400 hover:bg-opacity-40 border border-red-800 border-opacity-30" : "bg-red-100 text-red-700 hover:bg-red-200"} transition-all duration-200`}>
+                              <XCircle size={16} className='mr-2' />
+                              Absent
+                            </button>
+                            <button onClick={() => handleUndoLastAttendance(subject.id)} className={`px-4 py-2 rounded-lg flex items-center ${darkMode ? "bg-gray-800 text-gray-400 hover:bg-gray-700 border border-gray-700 border-opacity-30" : "bg-gray-100 text-gray-700 hover:bg-gray-200"} transition-all duration-200`}>
+                              <RotateCcw size={16} className='mr-2' />
+                              Undo
                             </button>
                           </div>
 
-                          <div className='flex'>
-                            <button
-                              onClick={() => handleUndoLastAttendance(subject.id)}
-                              className={`flex-1 py-2 rounded-md flex items-center justify-center
-                                ${darkMode ? "bg-gray-700 hover:bg-gray-600 text-gray-300" : "bg-gray-100 hover:bg-gray-200 text-gray-700"}`}
-                            >
-                              <RotateCcw size={16} className='mr-1' /> Undo Last Record
-                            </button>
-                          </div>
+                          {subject.history && subject.history.length > 0 && (
+                            <div className='mt-5'>
+                              <h4 className='font-medium mb-3'>Recent History</h4>
+                              <div className='grid grid-cols-2 md:grid-cols-4 gap-2'>
+                                {[...subject.history]
+                                  .slice(-8)
+                                  .reverse()
+                                  .map((record, idx) => (
+                                    <div
+                                      key={idx}
+                                      className={`p-3 rounded-lg text-sm flex items-center justify-between
+                                    ${record.status === "attended" ? `${darkMode ? "bg-green-900 bg-opacity-20 text-green-300 border border-green-800 border-opacity-20" : "bg-green-50 text-green-700 border border-green-100"}` : `${darkMode ? "bg-red-900 bg-opacity-20 text-red-300 border border-red-800 border-opacity-20" : "bg-red-50 text-red-700 border border-red-100"}`}
+                                    `}
+                                    >
+                                      <span>{new Date(record.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                                      {record.status === "attended" ? <CheckCircle size={16} className={darkMode ? "text-green-400" : "text-green-500"} /> : <XCircle size={16} className={darkMode ? "text-red-400" : "text-red-500"} />}
+                                    </div>
+                                  ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -594,253 +629,208 @@ export default function AttendanceTracker() {
           )}
 
           {activeTab === "manage" && (
-            <div className={`rounded-lg p-4 ${darkMode ? "bg-gray-800" : "bg-white shadow"}`}>
-              <div className='flex justify-between items-center mb-4'>
-                <h2 className='text-xl font-semibold'>Manage Subjects</h2>
-                {!showAddForm && (
-                  <button onClick={() => setShowAddForm(true)} className={`px-3 py-2 rounded-md ${darkMode ? "bg-gradient-to-r from-purple-600 to-blue-600" : "bg-gradient-to-r from-purple-500 to-blue-500"} text-white flex items-center hover:shadow-md transition-all duration-300`}>
-                    <PlusCircle size={16} className='mr-1' /> Add Subject
-                  </button>
-                )}
-              </div>
-
-              {showAddForm && (
-                <div className={`p-4 mb-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-50"} animate-fadeIn`}>
-                  <h3 className='font-medium mb-3'>Add New Subject</h3>
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
-                    <div>
-                      <label className='block text-sm font-medium mb-1'>Subject Name</label>
-                      <input type='text' value={newSubject.name} onChange={(e) => setNewSubject({ ...newSubject, name: e.target.value })} className={`w-full p-2 rounded-md ${darkMode ? "bg-gray-600 border border-gray-500 text-white" : "border border-gray-300"} focus:ring-2 focus:ring-purple-500 transition-all duration-200`} placeholder='Enter subject name' />
+            <div className='space-y-6'>
+              {/* Add Subject Form */}
+              {!showAddForm ? (
+                <button onClick={() => setShowAddForm(true)} className={`w-full p-4 rounded-xl mb-6 flex items-center justify-center ${darkMode ? "bg-gray-900 bg-opacity-60 backdrop-blur-md text-purple-400 border border-purple-900 border-opacity-30 hover:bg-opacity-80" : "bg-white shadow-md hover:shadow-lg text-purple-600"} transition-all duration-300`}>
+                  <PlusCircle size={20} className='mr-2' />
+                  Add New Subject
+                </button>
+              ) : (
+                <div className={`p-6 rounded-xl mb-6 ${darkMode ? "bg-gray-900 bg-opacity-60 backdrop-blur-md border border-gray-800 border-opacity-40" : "bg-white shadow-lg"}`}>
+                  <h3 className='text-xl font-semibold mb-4'>Add New Subject</h3>
+                  <div>
+                    <div className='mb-4'>
+                      <label className={`block mb-2 text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-700"}`}>Subject Name</label>
+                      <input type='text' value={newSubject.name} onChange={(e) => setNewSubject({ ...newSubject, name: e.target.value })} className={`w-full p-3 rounded-lg ${darkMode ? "bg-gray-800 text-white border border-gray-700" : "bg-gray-50 border border-gray-200"} focus:outline-none focus:ring-2 focus:ring-purple-500`} placeholder='e.g. Mathematics' />
                     </div>
-                    <div>
-                      <label className='block text-sm font-medium mb-1'>Target Attendance (%)</label>
-                      <input 
-                        type='number' 
-                        min='1' 
-                        max='100' 
-                        value={newSubject.targetPercentage} 
-                        onChange={(e) => setNewSubject({ 
-                          ...newSubject, 
-                          targetPercentage: Number(e.target.value) 
-                        })} 
-                        className={`w-full p-2 rounded-md ${darkMode ? "bg-gray-600 border border-gray-500 text-white" : "border border-gray-300"} focus:ring-2 focus:ring-purple-500 transition-all duration-200`} 
-                      />
+                    <div className='mb-6'>
+                      <label className={`block mb-2 text-sm font-medium ${darkMode ? "text-gray-300" : "text-gray-700"}`}>Target Attendance (%)</label>
+                      <input type='number' min='0' max='100' value={newSubject.targetPercentage} onChange={(e) => setNewSubject({ ...newSubject, targetPercentage: Number(e.target.value) })} className={`w-full p-3 rounded-lg ${darkMode ? "bg-gray-800 text-white border border-gray-700" : "bg-gray-50 border border-gray-200"} focus:outline-none focus:ring-2 focus:ring-purple-500`} />
                     </div>
-                  </div>
-                  <div className='flex justify-end space-x-2'>
-                    <button onClick={() => setShowAddForm(false)} className={`px-3 py-2 rounded-md ${darkMode ? "bg-gray-600 hover:bg-gray-500" : "bg-gray-200 hover:bg-gray-300"} transition-colors duration-200`}>
-                      Cancel
-                    </button>
-                    <button onClick={handleAddSubject} className={`px-3 py-2 rounded-md ${darkMode ? "bg-gradient-to-r from-purple-600 to-blue-600" : "bg-gradient-to-r from-purple-500 to-blue-500"} text-white hover:shadow-md transition-all duration-300`}>
-                      Add Subject
-                    </button>
+                    <div className='flex space-x-3'>
+                      <button onClick={handleAddSubject} className={`px-4 py-3 rounded-lg flex-1 flex items-center justify-center ${darkMode ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500" : "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"} text-white transition-all duration-300`}>
+                        <Save size={18} className='mr-2' />
+                        Save Subject
+                      </button>
+                      <button onClick={() => setShowAddForm(false)} className={`px-4 py-3 rounded-lg ${darkMode ? "bg-gray-800 hover:bg-gray-700 text-gray-300" : "bg-gray-200 hover:bg-gray-300 text-gray-700"} transition-all duration-300`}>
+                        Cancel
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {editingSubject && (
-                <div className={`p-4 mb-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-50"} animate-fadeIn`}>
-                  <h3 className='font-medium mb-3'>Edit Subject</h3>
-                  <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-4'>
-                    <div>
-                      <label className='block text-sm font-medium mb-1'>Subject Name</label>
-                      <input type='text' value={editingSubject.name} onChange={(e) => setEditingSubject({ ...editingSubject, name: e.target.value })} className={`w-full p-2 rounded-md ${darkMode ? "bg-gray-600 border border-gray-500 text-white" : "border border-gray-300"} focus:ring-2 focus:ring-purple-500 transition-all duration-200`} />
-                    </div>
-                    <div>
-                      <label className='block text-sm font-medium mb-1'>Attended Classes</label>
-                      <input type='number' min='0' value={editingSubject.attended} onChange={(e) => setEditingSubject({ ...editingSubject, attended: parseInt(e.target.value) || 0 })} className={`w-full p-2 rounded-md ${darkMode ? "bg-gray-600 border border-gray-500 text-white" : "border border-gray-300"} focus:ring-2 focus:ring-purple-500 transition-all duration-200`} />
-                    </div>
-                    <div>
-                      <label className='block text-sm font-medium mb-1'>Total Classes</label>
-                      <input type='number' min='0' value={editingSubject.total} onChange={(e) => setEditingSubject({ ...editingSubject, total: parseInt(e.target.value) || 0 })} className={`w-full p-2 rounded-md ${darkMode ? "bg-gray-600 border border-gray-500 text-white" : "border border-gray-300"} focus:ring-2 focus:ring-purple-500 transition-all duration-200`} />
-                    </div>
-                    <div>
-                      <label className='block text-sm font-medium mb-1'>Target Attendance (%)</label>
-                      <input 
-                        type='number' 
-                        min='1' 
-                        max='100' 
-                        value={editingSubject?.targetPercentage || ''} 
-                        onChange={(e) => editingSubject && setEditingSubject({ 
-                          ...editingSubject, 
-                          targetPercentage: Number(e.target.value) || 75 
-                        })} 
-                        className={`w-full p-2 rounded-md ${darkMode ? "bg-gray-600 border border-gray-500 text-white" : "border border-gray-300"} focus:ring-2 focus:ring-purple-500 transition-all duration-200`} 
-                      />
-                    </div>
-                  </div>
-                  <div className='flex justify-end space-x-2'>
-                    <button onClick={() => setEditingSubject(null)} className={`px-3 py-2 rounded-md ${darkMode ? "bg-gray-600 hover:bg-gray-500" : "bg-gray-200 hover:bg-gray-300"} transition-colors duration-200`}>
-                      Cancel
-                    </button>
-                    <button onClick={handleUpdateSubject} className={`px-3 py-2 rounded-md ${darkMode ? "bg-green-600 hover:bg-green-700" : "bg-green-600 hover:bg-green-700"} text-white flex items-center transition-all duration-300`}>
-                      <Save size={16} className='mr-1' /> Save Changes
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              <div className='mt-4'>
-                <h3 className='font-medium mb-3'>Your Subjects</h3>
+              {/* Subject List */}
+              <div className='space-y-4'>
+                <h3 className='text-xl font-semibold mb-4'>My Subjects</h3>
                 {subjects.length === 0 ? (
-                  <div className={`text-center py-8 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
-                    <p className='text-gray-500'>No subjects added yet.</p>
-                    <button onClick={() => setShowAddForm(true)} className={`mt-3 px-4 py-2 rounded-md ${darkMode ? "bg-gradient-to-r from-purple-600 to-blue-600" : "bg-gradient-to-r from-purple-500 to-blue-500"} text-white hover:shadow-md transition-all duration-300`}>
-                      <PlusCircle size={16} className='inline-block mr-1' /> Add Your First Subject
-                    </button>
+                  <div className={`p-8 text-center rounded-xl ${darkMode ? "bg-gray-900 bg-opacity-60 backdrop-blur-md border border-gray-800 border-opacity-40" : "bg-white shadow-md"}`}>
+                    <p className={`text-lg ${darkMode ? "text-gray-400" : "text-gray-600"}`}>No subjects added yet.</p>
                   </div>
                 ) : (
-                  <div className={`rounded-md overflow-hidden ${darkMode ? "border border-gray-700" : "border border-gray-200"}`}>
-                    {subjects.map((subject, index) => (
-                      <div key={subject.id} className={`flex items-center justify-between p-3 ${index !== subjects.length - 1 ? `${darkMode ? "border-b border-gray-700" : "border-b border-gray-200"}` : ""} transition-colors duration-200 hover:${darkMode ? "bg-gray-700" : "bg-gray-50"}`}>
-                        <div>
-                          <h4 className='font-medium'>{subject.name}</h4>
-                          <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-                            Attendance: {subject.attended}/{subject.total} ({subject.total === 0 ? "100" : ((subject.attended / subject.total) * 100).toFixed(1)}%)
-                          </p>
-                          <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Target: {subject.targetPercentage}%</p>
+                  subjects.map((subject) => (
+                    <div key={subject.id} className={`p-5 rounded-xl ${darkMode ? "bg-gray-900 bg-opacity-60 backdrop-blur-md border border-gray-800 border-opacity-40" : "bg-white shadow-md"} flex justify-between items-center`}>
+                      {editingSubject && editingSubject.id === subject.id ? (
+                        <div className='w-full'>
+                          <div className='mb-3'>
+                            <input type='text' value={editingSubject.name} onChange={(e) => setEditingSubject({ ...editingSubject, name: e.target.value })} className={`w-full p-3 rounded-lg ${darkMode ? "bg-gray-800 text-white border border-gray-700" : "bg-gray-50 border border-gray-200"} focus:outline-none focus:ring-2 focus:ring-purple-500`} />
+                          </div>
+                          <div className='mb-4'>
+                            <label className={`block mb-1 text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>Target Attendance (%)</label>
+                            <input
+                              type='number'
+                              min='0'
+                              max='100'
+                              value={editingSubject.targetPercentage}
+                              onChange={(e) =>
+                                setEditingSubject({
+                                  ...editingSubject,
+                                  targetPercentage: Number(e.target.value),
+                                })
+                              }
+                              className={`w-full p-3 rounded-lg ${darkMode ? "bg-gray-800 text-white border border-gray-700" : "bg-gray-50 border border-gray-200"} focus:outline-none focus:ring-2 focus:ring-purple-500`}
+                            />
+                          </div>
+                          <div className='flex space-x-3'>
+                            <button onClick={handleUpdateSubject} className={`px-4 py-2 rounded-lg ${darkMode ? "bg-green-800 bg-opacity-40 text-green-400 hover:bg-opacity-50" : "bg-green-100 text-green-700 hover:bg-green-200"} transition-all duration-200`}>
+                              Save
+                            </button>
+                            <button onClick={() => setEditingSubject(null)} className={`px-4 py-2 rounded-lg ${darkMode ? "bg-gray-800 text-gray-300 hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"} transition-all duration-200`}>
+                              Cancel
+                            </button>
+                          </div>
                         </div>
-                        <div className='flex space-x-2'>
-                          <button onClick={() => setEditingSubject({ ...subject })} className={`p-2 rounded-md ${darkMode ? "bg-gray-700 hover:bg-gray-600" : "bg-gray-100 hover:bg-gray-200"} transition-colors duration-200`}>
-                            <Settings size={16} />
-                          </button>
-                          <button onClick={() => handleDeleteSubject(subject.id)} className={`p-2 rounded-md ${darkMode ? "bg-red-900 hover:bg-red-800" : "bg-red-100 hover:bg-red-200"} ${darkMode ? "text-red-300" : "text-red-600"} transition-colors duration-200`}>
-                            {showConfirmDelete === subject.id ? <CheckCircle size={16} /> : <Trash2 size={16} />}
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ) : (
+                        <>
+                          <div>
+                            <h4 className='font-medium'>
+                              {subject.name} <span className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>(Target: {subject.targetPercentage}%)</span>
+                            </h4>
+                            <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                              Attended {subject.attended} out of {subject.total} classes ({subject.total === 0 ? "0" : formatPercentage((subject.attended / subject.total) * 100)})
+                            </p>
+                          </div>
+                          <div className='flex'>
+                            <button onClick={() => setEditingSubject(subject)} className={`p-2 mr-2 rounded-lg ${darkMode ? "bg-gray-800 hover:bg-gray-700 text-blue-400" : "bg-gray-100 hover:bg-gray-200 text-blue-600"} transition-all duration-200`}>
+                              <Settings size={18} />
+                            </button>
+                            <button onClick={() => handleDeleteSubject(subject.id)} className={`p-2 rounded-lg ${darkMode ? "bg-gray-800 hover:bg-gray-700 text-red-400" : "bg-gray-100 hover:bg-gray-200 text-red-600"} transition-all duration-200`}>
+                              {showConfirmDelete === subject.id ? <CheckCircle size={18} className='text-red-500' /> : <Trash2 size={18} />}
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))
                 )}
               </div>
             </div>
           )}
 
           {activeTab === "stats" && (
-            <div className={`rounded-lg p-4 ${darkMode ? "bg-gray-800" : "bg-white shadow"}`}>
-              <div className='flex justify-between items-center mb-4'>
-                <h2 className='text-xl font-semibold'>Attendance Statistics</h2>
-                <div className='flex space-x-2'>
-                  <button onClick={() => setStatsType("weekly")} className={`px-3 py-1 text-sm rounded-md ${statsType === "weekly" ? `${darkMode ? "bg-purple-900 text-purple-200" : "bg-purple-100 text-purple-800"}` : `${darkMode ? "bg-gray-700" : "bg-gray-100"}`} transition-colors duration-200`}>
+            <div className='space-y-6'>
+              {/* Stats view selection */}
+              <div className={`p-4 rounded-xl ${darkMode ? "bg-gray-900 bg-opacity-60 backdrop-blur-md border border-gray-800 border-opacity-40" : "bg-white shadow-md"} flex justify-between items-center mb-6`}>
+                <h3 className='font-medium'>Statistics View</h3>
+                <div className='flex space-x-3'>
+                  <button
+                    onClick={() => setStatsType("weekly")}
+                    className={`px-4 py-2 text-sm rounded-lg transition-all duration-200
+                    ${statsType === "weekly" ? `${darkMode ? "bg-purple-900 bg-opacity-50 text-purple-200 border border-purple-700" : "bg-purple-100 text-purple-800"}` : `${darkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-100 hover:bg-gray-200"}`}`}
+                  >
                     Weekly
-                  </button>
-                  <button onClick={() => setStatsType("monthly")} className={`px-3 py-1 text-sm rounded-md ${statsType === "monthly" ? `${darkMode ? "bg-purple-900 text-purple-200" : "bg-purple-100 text-purple-800"}` : `${darkMode ? "bg-gray-700" : "bg-gray-100"}`} transition-colors duration-200`}>
-                    Monthly
                   </button>
                 </div>
               </div>
 
               {subjects.length === 0 ? (
-                <div className={`text-center py-8 ${darkMode ? "bg-gray-700" : "bg-gray-50"} rounded-lg`}>
-                  <p className='text-gray-500'>No statistics available yet. Add subjects to see statistics.</p>
-                  <button
-                    onClick={() => {
-                      setActiveTab("manage");
-                      setShowAddForm(true);
-                    }}
-                    className={`mt-3 px-4 py-2 rounded-md ${darkMode ? "bg-gradient-to-r from-purple-600 to-blue-600" : "bg-gradient-to-r from-purple-500 to-blue-500"} text-white hover:shadow-md transition-all duration-300`}
-                  >
-                    <PlusCircle size={16} className='inline-block mr-1' /> Add Your First Subject
-                  </button>
+                <div className={`p-8 text-center rounded-xl ${darkMode ? "bg-gray-900 bg-opacity-60 backdrop-blur-md border border-gray-800 border-opacity-40" : "bg-white shadow-md"}`}>
+                  <p className={`text-lg ${darkMode ? "text-gray-400" : "text-gray-600"}`}>Add subjects to see statistics</p>
                 </div>
               ) : (
-                <div className='space-y-6'>
-                  {/* Overall Statistics */}
-                  <div className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-50"}`}>
-                    <h3 className='font-medium mb-3'>Overall Statistics</h3>
-                    <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                      <div className={`p-3 rounded-md ${darkMode ? "bg-gray-600" : "bg-white"} shadow-sm`}>
-                        <p className='text-sm text-gray-500'>Average Attendance</p>
-                        <p className='text-xl font-bold'>{subjects.reduce((sum, subject) => sum + (subject.total > 0 ? (subject.attended / subject.total) * 100 : 100), 0) / subjects.length}%</p>
+                subjects.map((subject) => {
+                  const data = getAttendanceData(subject);
+                  const currentPercentage = subject.total === 0 ? 100 : (subject.attended / subject.total) * 100;
+                  const status = getAttendanceStatus(subject.attended, subject.total, subject.targetPercentage);
+
+                  return (
+                    <div key={subject.id} className={`p-5 rounded-xl ${darkMode ? "bg-gray-900 bg-opacity-60 backdrop-blur-md border border-gray-800 border-opacity-40" : "bg-white shadow-md"} mb-6`}>
+                      <div className='flex justify-between items-center mb-4'>
+                        <h3 className='text-lg font-medium'>{subject.name}</h3>
+                        <div
+                          className={`px-4 py-2 rounded-full text-sm font-medium
+                          ${status === "good" ? `${darkMode ? "bg-green-900 bg-opacity-30 text-green-300 border border-green-800 border-opacity-30" : "bg-green-100 text-green-800"}` : status === "warning" ? `${darkMode ? "bg-yellow-900 bg-opacity-30 text-yellow-300 border border-yellow-800 border-opacity-30" : "bg-yellow-100 text-yellow-800"}` : `${darkMode ? "bg-red-900 bg-opacity-30 text-red-300 border border-red-800 border-opacity-30" : "bg-red-100 text-red-800"}`}`}
+                        >
+                          {formatPercentage(currentPercentage)} / {subject.targetPercentage}% Target
+                        </div>
                       </div>
-                      <div className={`p-3 rounded-md ${darkMode ? "bg-gray-600" : "bg-white"} shadow-sm`}>
-                        <p className='text-sm text-gray-500'>Total Classes Attended</p>
-                        <p className='text-xl font-bold'>
-                          {subjects.reduce((sum, subject) => sum + subject.attended, 0)} / {subjects.reduce((sum, subject) => sum + subject.total, 0)}
-                        </p>
-                      </div>
-                      <div className={`p-3 rounded-md ${darkMode ? "bg-gray-600" : "bg-white"} shadow-sm`}>
-                        <p className='text-sm text-gray-500'>Subjects Meeting Target</p>
-                        <p className='text-xl font-bold'>
-                          {
-                            subjects.filter((subject) => {
-                              const percentage = subject.total === 0 ? 100 : (subject.attended / subject.total) * 100;
-                              return percentage >= subject.targetPercentage;
-                            }).length
-                          }{" "}
-                          / {subjects.length}
-                        </p>
+
+                      {data.length > 0 ? (
+                        <div className='mt-4'>
+                          <div className='h-40 w-full'>
+                            {/* This would be a chart component in a real application */}
+                            <div className={`h-full flex items-end justify-between p-3 rounded-lg ${darkMode ? "bg-gray-800 bg-opacity-60" : "bg-gray-50"}`}>
+                              {data.map((week, index) => (
+                                <div key={index} className='flex flex-col items-center'>
+                                  <div className='flex w-12 justify-center'>
+                                    <div className='w-4 bg-green-500 opacity-80 rounded-t-sm' style={{ height: `${(week.attended / (week.attended + week.missed)) * 100}px` }}></div>
+                                    <div className='w-4 bg-red-500 opacity-70 rounded-t-sm' style={{ height: `${(week.missed / (week.attended + week.missed)) * 100}px` }}></div>
+                                  </div>
+                                  <div className={`text-xs mt-2 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>{week.week}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          <div className='flex justify-center mt-4 space-x-6'>
+                            <div className='flex items-center'>
+                              <div className='w-3 h-3 rounded-full bg-green-500 opacity-80 mr-2'></div>
+                              <span className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Attended</span>
+                            </div>
+                            <div className='flex items-center'>
+                              <div className='w-3 h-3 rounded-full bg-red-500 opacity-70 mr-2'></div>
+                              <span className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Missed</span>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className={`h-40 w-full flex items-center justify-center ${darkMode ? "bg-gray-800 bg-opacity-60 rounded-lg" : "bg-gray-50 rounded-lg"}`}>
+                          <p className={darkMode ? "text-gray-400" : "text-gray-500"}>Not enough data to display chart</p>
+                        </div>
+                      )}
+
+                      <div className='grid grid-cols-3 gap-4 mt-6'>
+                        <div className={`p-4 rounded-xl ${darkMode ? "bg-gray-800 bg-opacity-70 backdrop-blur-sm border border-gray-700 border-opacity-30" : "bg-gray-50"} transition-all duration-300`}>
+                          <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Overall Attendance</p>
+                          <p className='font-semibold mt-1'>{formatPercentage(currentPercentage)}</p>
+                        </div>
+
+                        <div className={`p-4 rounded-xl ${darkMode ? "bg-gray-800 bg-opacity-70 backdrop-blur-sm border border-gray-700 border-opacity-30" : "bg-gray-50"} transition-all duration-300`}>
+                          <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Classes Attended</p>
+                          <p className='font-semibold mt-1'>{subject.attended}</p>
+                        </div>
+
+                        <div className={`p-4 rounded-xl ${darkMode ? "bg-gray-800 bg-opacity-70 backdrop-blur-sm border border-gray-700 border-opacity-30" : "bg-gray-50"} transition-all duration-300`}>
+                          <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Classes Missed</p>
+                          <p className='font-semibold mt-1'>{subject.total - subject.attended}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Subject-specific Statistics */}
-                  {subjects.map((subject) => {
-                    const currentPercentage = subject.total === 0 ? 100 : (subject.attended / subject.total) * 100;
-                    const status = getAttendanceStatus(subject.attended, subject.total, subject.targetPercentage);
-                    const attendanceData = getAttendanceData(subject);
-
-                    return (
-                      <div key={subject.id} className={`p-4 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-50"}`}>
-                        <h3 className='font-medium mb-3'>{subject.name}</h3>
-                        <div className='flex items-center mb-3'>
-                          <div className={`w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold mr-4 ${status === "good" ? `${darkMode ? "bg-green-900 text-green-200" : "bg-green-100 text-green-800"}` : status === "warning" ? `${darkMode ? "bg-yellow-900 text-yellow-200" : "bg-yellow-100 text-yellow-800"}` : `${darkMode ? "bg-red-900 text-red-200" : "bg-red-100 text-red-800"}`}`}>{Math.round(currentPercentage)}%</div>
-                          <div>
-                            <p className='font-medium'>Current: {formatPercentage(currentPercentage)}</p>
-                            <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Target: {subject.targetPercentage}%</p>
-                          </div>
-                        </div>
-
-                        {/* Attendance Chart/Visualization */}
-                        <div className={`p-3 rounded-md ${darkMode ? "bg-gray-800" : "bg-white"} mb-3`}>
-                          <p className='text-sm font-medium mb-2'>Recent Attendance Pattern</p>
-                          <div className='flex items-end space-x-1 h-24'>
-                            {attendanceData.map((data, index) => (
-                              <div key={index} className='flex-1 flex flex-col items-center'>
-                                <div className={`w-full transition-all duration-500 ${data.percentage >= subject.targetPercentage ? "bg-green-500" : data.percentage >= subject.targetPercentage - 10 ? "bg-yellow-500" : "bg-red-500"}`} style={{ height: `${Math.max(5, data.percentage)}%` }}></div>
-                                <p className='text-xs mt-1 text-gray-500'>{data.week}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className='grid grid-cols-2 gap-3'>
-                          <div className={`p-3 rounded-md ${darkMode ? "bg-gray-600" : "bg-white"} shadow-sm`}>
-                            <p className='text-sm text-gray-500'>Classes This Period</p>
-                            <p className='font-bold'>
-                              Attended: {attendanceData.reduce((sum, data) => sum + data.attended, 0)}
-                              <br />
-                              Missed: {attendanceData.reduce((sum, data) => sum + data.missed, 0)}
-                            </p>
-                          </div>
-                          <div className={`p-3 rounded-md ${darkMode ? "bg-gray-600" : "bg-white"} shadow-sm`}>
-                            <p className='text-sm text-gray-500'>Needed to Reach Target</p>
-                            <p className='font-bold'>
-                              {(() => {
-                                // Calculate how many consecutive classes to attend to reach target
-                                const needed = Math.ceil((subject.targetPercentage / 100) * (subject.total + 1) - subject.attended);
-                                return needed > 0 ? `${needed} classes` : "On target!";
-                              })()}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                  );
+                })
               )}
             </div>
           )}
         </div>
-
-        {/* Footer */}
-        <footer className='mt-12 text-center'>
-          <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-500"}`}>Attendance Tracker • Stay on top of your class attendance</p>
-        </footer>
       </div>
 
-      {/* Global CSS */}
-      <style jsx global>{`
+      {/* Footer */}
+      <footer className={`mt-12 py-4 border-t ${darkMode ? "border-gray-800 text-gray-400" : "border-gray-200 text-gray-500"} text-center text-sm`}>
+        <p>Attendance Tracker © {new Date().getFullYear()}</p>
+      </footer>
+
+      {/* Custom Styles */}
+      <style jsx>{`
         @keyframes fadeInUp {
           from {
             opacity: 0;
@@ -850,24 +840,6 @@ export default function AttendanceTracker() {
             opacity: 1;
             transform: translateY(0);
           }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out forwards;
-        }
-
-        .dark-mode {
-          background-color: #111827;
-          color: #f3f4f6;
         }
       `}</style>
     </div>
